@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System;
-using UnityEngine.Experimental.XR;
+//using UnityEngine.Experimental.XR;
 using UnityEngine.XR.ARFoundation;
+using UnityEngine.XR.ARSubsystems;
 namespace UnityARInterface
 {
 	public class ARPlaneHandler : MonoBehaviour
@@ -17,33 +18,52 @@ namespace UnityARInterface
 		void Awake()
 		{
 			_arPlaneManager = GetComponent<ARPlaneManager>();
-			_arPlaneManager.planeAdded += OnPlaneAdded;
-			_arPlaneManager.planeUpdated += OnPlaneUpdated;
+			_arPlaneManager.planesChanged += OnPlanesChanged;
+			//_arPlaneManager.planeAdded += OnPlaneAdded;
+			//_arPlaneManager.planeUpdated += OnPlaneUpdated;
 		}
 
-		void OnPlaneAdded(ARPlaneAddedEventArgs eventArgs)
+		//In ARFoundation 1.5, they got rid of all the seperate events and now
+		//just send one PlanesChanged event.
+		//See here: https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@1.5/manual/migration-guide.html#events
+		void OnPlanesChanged(ARPlanesChangedEventArgs eventArgs)
 		{
-			Debug.Log("Plane Added!!");
-			UpdateARPlane(eventArgs.plane);
+			Debug.Log("Planes Changed!!");
+			if (eventArgs.added.Count > 0 || eventArgs.updated.Count > 0)
+			{
+				foreach (ARPlane p in eventArgs.added)
+				{
+					UpdateARPlane(p);
+				}
+				foreach (ARPlane p in eventArgs.updated)
+				{
+					UpdateARPlane(p);
+				}
+			}
 		}
+		//void OnPlaneAdded(ARPlaneAddedEventArgs eventArgs)
+		//{
+		//	Debug.Log("Plane Added!!");
+		//	UpdateARPlane(eventArgs.plane);
+		//}
 
-		void OnPlaneUpdated(ARPlaneUpdatedEventArgs eventArgs)
-		{
-			Debug.Log("Plane Updated!!");
-			UpdateARPlane(eventArgs.plane);
-		}
+		//void OnPlaneUpdated(ARPlaneUpdatedEventArgs eventArgs)
+		//{
+		//	Debug.Log("Plane Updated!!");
+		//	UpdateARPlane(eventArgs.plane);
+		//}
 
 		void UpdateARPlane(ARPlane arPlane)
 		{
 
 			if (_didCacheId == false)
 			{
-				_planeId = arPlane.boundedPlane.Id;
+				_planeId = arPlane.trackableId;
 				Debug.Log("Plane Id " + _planeId.ToString());
 				_didCacheId = true;
 			}
 
-			if (arPlane.boundedPlane.Id == _planeId)
+			if (arPlane.trackableId == _planeId)
 			{
 				_cachedARPlane = arPlane;
 				Debug.Log("Cached Plane " + _planeId.ToString());

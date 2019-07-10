@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Experimental.XR;
+﻿using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 
 [RequireComponent(typeof(ARPlane))]
@@ -11,20 +8,38 @@ public class UpdateShaderCoordinatesByARPlane : MonoBehaviour
 	private Vector3 _localScale, _position;
 	private ARPlane _arPlane;
 
+	ARPlaneManager _arPlaneManager;
+
 	private void Awake()
 	{
 		_arPlane = GetComponent<ARPlane>();
+		_arPlaneManager = GetComponent<ARPlaneManager>();
+		_arPlaneManager.planesChanged += OnPlanesChanged;
 	}
 	void Start()
 	{
 		_arPlane.boundaryChanged += CheckCoordinates;
-		_arPlane.removed += ResetShaderValues;
+	}
+
+	void OnPlanesChanged(ARPlanesChangedEventArgs eventArgs)
+	{
+		if (eventArgs.removed.Count > 0)
+		{
+			Debug.Log("Planes Removed!!");
+			foreach (ARPlane p in eventArgs.removed)
+			{
+				if (p.trackableId == _arPlane.trackableId)
+				{
+					ResetShaderValues(_arPlane);
+				}
+			}
+		}
 	}
 
 	void CheckCoordinates(ARPlaneBoundaryChangedEventArgs plane)
 	{
-
-		_position = plane.center;
+			
+		_position = plane.plane.center;
 		//_rotation = Quaternion.Inverse(plane.otation);
 		//_localScale = new Vector3(plane.convexBoundary, 10, plane.convexBoundary[1]);
 

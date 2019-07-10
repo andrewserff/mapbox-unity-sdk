@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Experimental.XR;
+//using UnityEngine.Experimental.XR;
 using UnityEngine.XR.ARFoundation;
+using UnityEngine.XR.ARSubsystems;
 
 [RequireComponent(typeof(ARSessionOrigin))]
 public class PlaceOnPlane : MonoBehaviour
 {
+	public ARRaycastManager m_RaycastManager;
+
 	[SerializeField]
 	[Tooltip("Instantiates this prefab on a plane at the touch location.")]
 	GameObject m_PlacedPrefab;
@@ -39,7 +42,7 @@ public class PlaceOnPlane : MonoBehaviour
 		{
 			Touch touch = Input.GetTouch(0);
 
-			if (m_SessionOrigin.Raycast(touch.position, s_Hits, TrackableType.PlaneWithinPolygon))
+			if (m_RaycastManager.Raycast(touch.position, s_Hits, TrackableType.PlaneWithinPolygon))
 			{
 				Pose hitPose = s_Hits[0].pose;
 
