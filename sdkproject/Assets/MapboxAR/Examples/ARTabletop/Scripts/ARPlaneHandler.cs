@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System;
-//using UnityEngine.Experimental.XR;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 namespace UnityARInterface
@@ -19,8 +18,6 @@ namespace UnityARInterface
 		{
 			_arPlaneManager = GetComponent<ARPlaneManager>();
 			_arPlaneManager.planesChanged += OnPlanesChanged;
-			//_arPlaneManager.planeAdded += OnPlaneAdded;
-			//_arPlaneManager.planeUpdated += OnPlaneUpdated;
 		}
 
 		//In ARFoundation 1.5, they got rid of all the seperate events and now
@@ -41,17 +38,6 @@ namespace UnityARInterface
 				}
 			}
 		}
-		//void OnPlaneAdded(ARPlaneAddedEventArgs eventArgs)
-		//{
-		//	Debug.Log("Plane Added!!");
-		//	UpdateARPlane(eventArgs.plane);
-		//}
-
-		//void OnPlaneUpdated(ARPlaneUpdatedEventArgs eventArgs)
-		//{
-		//	Debug.Log("Plane Updated!!");
-		//	UpdateARPlane(eventArgs.plane);
-		//}
 
 		void UpdateARPlane(ARPlane arPlane)
 		{
